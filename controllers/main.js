@@ -1,3 +1,4 @@
+const jwt = require("jsonwebtoken");
 const CustomAPIError = require("../errors/custom-error");
 
 const login = async (req, res) => {
@@ -11,10 +12,26 @@ const login = async (req, res) => {
     throw new CustomAPIError("please provide username and password", 400);
   }
 
-  res.send("Fake login/register/signup route");
+  // demo method, id is regularly provided by the DB
+  const id = new Date().getDate();
+
+  // payloads should be small
+  const token = jwt.sign(
+    {
+      id,
+      username,
+    },
+    process.env.JWT_SECRET,
+    {
+      expiresIn: "30d",
+    }
+  );
+
+  res.status(200).json({ msg: "User created", token });
 };
 
 const dashboard = async (req, res) => {
+  console.log(req.headers);
   const luckyNumber = Math.floor(Math.random() * 100);
   res.status(200).json({
     msg: `Hello, John Doe`,
